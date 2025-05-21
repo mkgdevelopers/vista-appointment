@@ -33,17 +33,17 @@ export default function BookingPage() {
   const [loadingSlots, setLoadingSlots] = useState(false);
 
 
-  const fetchBookedSlotsForDate = async (selectedDate) => {
-    const formattedDate = selectedDate.toISOString().split("T")[0]; 
-    const query = `*[_type == "appointment" && date == "${formattedDate}"]{ timeSlot }`;
-    try {
-      const result = await client.fetch(query);
-      return result.map(item => item.timeSlot);
-    } catch (error) {
-      console.error("Error fetching booked slots:", error);
-      return [];
-    }
-  };
+  // const fetchBookedSlotsForDate = async (selectedDate) => {
+  //   const formattedDate = selectedDate.toISOString().split("T")[0]; 
+  //   const query = `*[_type == "appointment" && date == "${formattedDate}"]{ timeSlot }`;
+  //   try {
+  //     const result = await client.fetch(query);
+  //     return result.map(item => item.timeSlot);
+  //   } catch (error) {
+  //     console.error("Error fetching booked slots:", error);
+  //     return [];
+  //   }
+  // };
 
 const handleDateChange = async (selectedDate) => {
   setLoadingSlots(true);
@@ -55,23 +55,30 @@ const handleDateChange = async (selectedDate) => {
   const dayOfWeek = cleanDate.getDay();
   const dayName = weekdayMap[dayOfWeek];
 
-  // Fetch all possible slots
-  const slotsData = await client.fetch(
-    `*[_type == "timeSlotConfig" && day == "${dayName}"][0]`
-  );
+  try {
+    // Fetch slots configured for this weekday
+    const configQuery = `*[_type == "timeSlotConfig" && day == "${dayName}"][0]`;
+    const slotConfig = await client.fetch(configQuery);
 
-  // Fetch booked slots
-  const booked = await fetchBookedSlotsForDate(cleanDate);
+    // Fetch appointments booked for this specific date
+    const formattedDate = cleanDate.toISOString().split("T")[0];
+    const bookedQuery = `*[_type == "appointment" && date == "${formattedDate}"]{ timeSlot }`;
+    const bookedResults = await client.fetch(bookedQuery);
+    const bookedSlots = bookedResults.map((item) => item.timeSlot);
 
-  // Remove booked from available
-  if (slotsData && slotsData.slots) {
-    const filtered = slotsData.slots.filter((slot) => !booked.includes(slot));
-    setAvailableSlots(filtered);
-  } else {
+    // Remove booked slots from available ones
+    const available =
+      slotConfig?.slots?.filter((slot) => !bookedSlots.includes(slot)) || [];
+
+    setAvailableSlots(available);
+  } catch (err) {
+    console.error("Error fetching available slots:", err);
     setAvailableSlots([]);
+  } finally {
+    setLoadingSlots(false);
   }
-  setLoadingSlots(false); 
 };
+
 
 
 // const fetchSlotsForDay = async (day) => {
