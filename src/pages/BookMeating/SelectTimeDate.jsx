@@ -46,6 +46,7 @@ export default function BookingPage() {
   };
 
 const handleDateChange = async (selectedDate) => {
+  setLoadingSlots(true);
   const cleanDate = new Date(selectedDate);
   cleanDate.setHours(0, 0, 0, 0);
   setDate(cleanDate);
@@ -69,6 +70,7 @@ const handleDateChange = async (selectedDate) => {
   } else {
     setAvailableSlots([]);
   }
+  setLoadingSlots(false); 
 };
 
 
