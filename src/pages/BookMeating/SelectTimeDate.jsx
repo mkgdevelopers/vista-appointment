@@ -45,7 +45,7 @@ export default function BookingPage() {
     }
   };
 
-  const handleDateChange = async (selectedDate) => {
+const handleDateChange = async (selectedDate) => {
   const cleanDate = new Date(selectedDate);
   cleanDate.setHours(0, 0, 0, 0);
   setDate(cleanDate);
@@ -54,27 +54,42 @@ export default function BookingPage() {
   const dayOfWeek = cleanDate.getDay();
   const dayName = weekdayMap[dayOfWeek];
 
-  await fetchSlotsForDay(dayName);
-};
+  // Fetch all possible slots
+  const slotsData = await client.fetch(
+    `*[_type == "timeSlotConfig" && day == "${dayName}"][0]`
+  );
 
-const fetchSlotsForDay = async (day) => {
-  setLoadingSlots(true); 
-  const query = `*[_type == "timeSlotConfig" && day == "${day}"][0]`;
+  // Fetch booked slots
+  const booked = await fetchBookedSlotsForDate(cleanDate);
 
-  try {
-    const result = await client.fetch(query);
-    if (result && result.slots) {
-      setAvailableSlots(result.slots);
-    } else {
-      setAvailableSlots([]);
-    }
-  } catch (err) {
-    console.error("Error fetching time slots from Sanity:", err);
+  // Remove booked from available
+  if (slotsData && slotsData.slots) {
+    const filtered = slotsData.slots.filter((slot) => !booked.includes(slot));
+    setAvailableSlots(filtered);
+  } else {
     setAvailableSlots([]);
-  } finally {
-    setLoadingSlots(false); 
   }
 };
+
+
+// const fetchSlotsForDay = async (day) => {
+//   setLoadingSlots(true); 
+//   const query = `*[_type == "timeSlotConfig" && day == "${day}"][0]`;
+
+//   try {
+//     const result = await client.fetch(query);
+//     if (result && result.slots) {
+//       setAvailableSlots(result.slots);
+//     } else {
+//       setAvailableSlots([]);
+//     }
+//   } catch (err) {
+//     console.error("Error fetching time slots from Sanity:", err);
+//     setAvailableSlots([]);
+//   } finally {
+//     setLoadingSlots(false); 
+//   }
+// };
 
 
 
