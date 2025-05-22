@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import vistaLogo from '../../assets/vistaonelogo.jpeg';
+import vistaLogo from '../../assets/vistaonelogo.png';
 import { client } from "../../sanity";
 import {
   Card, CardContent,
