@@ -54,7 +54,7 @@ const Form = () => {
           date: formattedDate,
           time,
           to: formData.email, 
-          message: `Hi ${formData.name}, your appointment with TheVista.One is confirmed for ${formattedDate} at ${time}.`,
+          message: `${formData.name}, requested an appointment on ${formattedDate} at ${time}.`,
         }),
       });
     } catch (err) {
