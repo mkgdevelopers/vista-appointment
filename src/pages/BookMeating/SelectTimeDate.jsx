@@ -87,7 +87,7 @@ const fetchSlotsForDay = async (day) => {
           <img
             src={vistaLogo}
             alt="TheVista.One"
-            className="h-14 rounded-xl shadow-sm"
+            className="h-14 rounded-xl"
           />
           <h1 className="text-3xl font-semibold text-gray-900 tracking-wide">
             Book an Appointment
