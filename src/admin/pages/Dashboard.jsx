@@ -3,10 +3,13 @@ import { client } from "../../sanity";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/Button";
 import { BarChart2, CalendarCheck, Clock, CheckCircle, XCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 
 const Dashboard = () => {
   const [appointments, setAppointments] = useState([]);
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -89,7 +92,7 @@ const Dashboard = () => {
       </div>
 
       <div>
-        <Button variant="default" onClick={() => alert("Redirect to appointment management or create new")}>
+        <Button variant="default" onClick={() => navigate('./appointments')}>
           Manage Appointments
         </Button>
       </div>
